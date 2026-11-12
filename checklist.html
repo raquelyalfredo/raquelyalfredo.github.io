@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checklist de Boda</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#8E9B86">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Italiana&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+<style>
+  .envoltura { max-width: 760px; margin: 0 auto; padding: 34px 16px 80px; }
+  body.textura-fondo { background: #56634F; }
+  header { text-align: center; color: #fff; margin-bottom: 22px; }
+  header .script { font-family: var(--f-script); font-size: 52px; color: var(--acento-claro); line-height: 1; }
+  header .pre { font-size: 12px; letter-spacing: .32em; text-transform: uppercase; margin-top: 8px; }
+  nav.enlaces { display: flex; justify-content: center; gap: 16px; margin-top: 12px; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; }
+  nav.enlaces a { color: #fff; }
+  .panel { border-radius: 18px; padding: 24px 20px; box-shadow: 0 18px 40px rgba(45,55,40,.28); }
+
+  #candado { max-width: 380px; margin: 40px auto; text-align: center; }
+  #candado h2 { font-family: var(--f-display); font-weight: 400; font-size: 30px; color: var(--vino); margin: 4px 0 10px; }
+  #candado p { color: var(--tinta-suave); margin: 0 0 16px; }
+  #candado input { width: 100%; padding: 12px 14px; font-size: 18px; border: 1px solid var(--beige-osc); border-radius: 10px; background: #fff; text-align: center; margin-bottom: 12px; }
+
+  .progreso { display: flex; align-items: center; gap: 18px; margin-bottom: 18px; }
+  .anillo { width: 92px; height: 92px; flex: none; }
+  .anillo circle { fill: none; stroke-width: 8; }
+  .anillo .fondo { stroke: var(--beige); }
+  .anillo .val { stroke: var(--rosa); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset .6s ease; }
+  .anillo text { font-family: var(--f-display); font-size: 24px; fill: var(--vino); }
+  .progreso h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 28px; color: var(--vino); line-height: 1.1; }
+  .progreso p { margin: 4px 0 0; color: var(--tinta-suave); }
+  .falta { font-size: 15px; color: var(--salvia-osc); }
+
+  .herramientas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .herramientas button { border: 1px solid var(--beige-osc); background: transparent; border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 14px; }
+  .herramientas button[aria-pressed="true"] { background: var(--vino); color: var(--papel); border-color: var(--vino); }
+
+  section.etapa { margin-top: 22px; }
+  .etapa-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--rosa-claro); padding-bottom: 6px; margin-bottom: 4px; }
+  .etapa-cab h3 { margin: 0; font-family: var(--f-script); font-weight: 400; font-size: 36px; color: var(--rosa-osc); line-height: 1.1; }
+  .etapa-cab span { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-suave); white-space: nowrap; }
+  ul.items { list-style: none; margin: 0; padding: 0; }
+  .item { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: start; padding: 9px 2px; border-bottom: 1px dashed var(--beige); }
+  .item input { position: absolute; opacity: 0; pointer-events: none; }
+  .caja { width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--beige-osc); background: #fff; display: grid; place-items: center; cursor: pointer; margin-top: 2px; transition: all .2s; }
+  .caja svg { width: 15px; height: 15px; opacity: 0; transform: scale(.4); transition: all .25s; color: #fff; }
+  .item input:checked + .caja { background: var(--salvia-osc); border-color: var(--salvia-osc); }
+  .item input:checked + .caja svg { opacity: 1; transform: none; }
+  .item input:focus-visible + .caja { outline: 2px solid var(--acento); outline-offset: 2px; }
+  .texto { cursor: pointer; font-size: 18px; line-height: 1.35; }
+  .texto small { display: block; color: var(--tinta-suave); font-size: 14.5px; font-style: italic; }
+  .item.hecho .texto { color: var(--tinta-suave); text-decoration: line-through; text-decoration-color: var(--rosa); }
+  .quitar { border: 0; background: none; color: var(--tinta-suave); cursor: pointer; font-size: 18px; padding: 0 6px; }
+  .oculto-hecho .item.hecho { display: none; }
+
+  .nueva { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 10px; }
+  .nueva input { padding: 9px 12px; font-size: 16px; border: 1px solid var(--beige-osc); border-radius: 10px; background: rgba(255,255,255,.7); }
+  .nueva button { border: 1px solid var(--vino); background: transparent; color: var(--vino); border-radius: 10px; padding: 0 14px; cursor: pointer; font-weight: 600; }
+  .estado { font-size: 13px; color: var(--tinta-suave); text-align: right; margin-top: 16px; min-height: 1em; }
+  .aviso { background: #E4E8DC; color: var(--salvia-osc); border-radius: 12px; padding: 10px 14px; font-size: 15px; margin-bottom: 14px; }
+  @media print {
+    body { background: #fff !important; }
+    header nav, .herramientas, .nueva, .quitar, .estado, .aviso, #candado { display: none !important; }
+    .panel { box-shadow: none; background: #fff; }
+  }
+</style>
+</head>
+<body class="textura-fondo">
+<div class="envoltura">
+  <header>
+    <div class="script">checklist de la boda</div>
+    <div class="pre" id="titulo-pareja"></div>
+    <nav class="enlaces"><a href="index.html">Invitación</a><a href="invitados.html">Invitados</a></nav>
+  </header>
+
+  <section id="candado" class="panel textura-papel">
+    <h2>Solo para los novios</h2>
+    <p>Escribe la clave (la misma de la lista de invitados).</p>
+    <form id="form-clave">
+      <input type="password" id="clave" aria-label="Clave" placeholder="Clave">
+      <button class="boton" type="submit" style="width:100%">Entrar</button>
+      <p id="error-clave" style="color:#9B2C3A;margin-top:10px"></p>
+    </form>
+  </section>
+
+  <section id="app" class="panel textura-papel" hidden>
+    <div class="aviso" id="aviso-demo" hidden>Modo prueba: lo que taches se guarda solo en este navegador hasta que conectes Google Sheets.</div>
+    <div class="progreso">
+      <svg class="anillo" viewBox="0 0 100 100" aria-hidden="true">
+        <circle class="fondo" cx="50" cy="50" r="42"/>
+        <circle class="val" id="anillo" cx="50" cy="50" r="42" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+        <text x="50" y="58" text-anchor="middle" id="pct">0%</text>
+      </svg>
+      <div>
+        <h2 id="resumen">0 de 0 listas</h2>
+        <p class="falta" id="cuenta"></p>
+      </div>
+    </div>
+    <div class="herramientas">
+      <button type="button" id="btn-ocultar" aria-pressed="false">Ocultar lo hecho</button>
+      <button type="button" onclick="window.print()">Imprimir</button>
+    </div>
+    <div id="etapas"></div>
+    <div class="estado" id="estado"></div>
+  </section>
+</div>
+
+<script src="datos.js"></script>
+<script src="api.js"></script>
+<script>
+(function () {
+  const B = window.BODA;
+  const $ = id => document.getElementById(id);
+  $("titulo-pareja").textContent = `${B.novia} & ${B.novio}`;
+
+  // Lista base: lo que normalmente lleva una boda, por etapas
+  const ETAPAS = [
+    { id: "e12", t: "12 meses o más", c: "Lo primero", items: [
+      ["presupuesto", "Definir el presupuesto total", "Quién aporta y cuánto; deja un 10 % para imprevistos"],
+      ["fecha", "Elegir la fecha (y una alternativa)"],
+      ["estilo", "Definir el estilo y la paleta", "Beige y rosa empolvado ✓"],
+      ["cantidad", "Calcular el número aproximado de invitados"],
+      ["borrador-lista", "Hacer el borrador de la lista de invitados"],
+      ["ceremonia-lugar", "Reservar el lugar de la ceremonia", "Iglesia, jardín, notaría…"],
+      ["recepcion-lugar", "Reservar el lugar de la recepción"],
+      ["padrinos", "Elegir padrinos, testigos y cortejo"],
+      ["organizador", "Decidir si contratar wedding planner"]
+    ]},
+    { id: "e9", t: "9 a 11 meses", c: "Proveedores clave", items: [
+      ["fotografo", "Contratar fotógrafo"],
+      ["video", "Contratar video / reels del día", "¡O editarlo tú! 😉"],
+      ["catering", "Contratar banquete / catering y hacer la cata"],
+      ["musica", "Contratar DJ, banda o música en vivo"],
+      ["vestido", "Buscar el vestido de novia"],
+      ["web", "Crear la web de la boda", "Invitación + confirmaciones ✓"],
+      ["save-date", "Enviar el «reserva la fecha» (save the date)"],
+      ["seguro", "Revisar documentos para el matrimonio civil y/o religioso"]
+    ]},
+    { id: "e6", t: "6 a 8 meses", c: "Detalles grandes", items: [
+      ["decoracion", "Contratar decoración y flores"],
+      ["pastel", "Elegir el pastel / torta y la mesa de postres"],
+      ["traje", "Elegir el traje del novio"],
+      ["damas", "Definir la ropa de damas y caballeros de honor"],
+      ["alojamiento", "Reservar hotel para invitados que viajan"],
+      ["luna-miel", "Planear y reservar la luna de miel", "Revisar pasaportes y visas"],
+      ["transporte", "Reservar transporte (carro de los novios, invitados)"],
+      ["mesa-regalos", "Decidir mesa de regalos o lluvia de sobres"]
+    ]},
+    { id: "e4", t: "4 a 5 meses", c: "Invitaciones y más", items: [
+      ["lista-final", "Cerrar la lista de invitados"],
+      ["invitaciones", "Diseñar las invitaciones"],
+      ["anillos", "Comprar los anillos (argollas)"],
+      ["maquillaje", "Reservar maquillaje y peinado (y hacer prueba)"],
+      ["cursos", "Charlas prematrimoniales (si es boda religiosa)"],
+      ["menu", "Definir el menú y las bebidas"],
+      ["recuerdos", "Elegir los recuerdos para los invitados"],
+      ["papeleria", "Papelería del día: menú, mesas, señalética"]
+    ]},
+    { id: "e2", t: "2 a 3 meses", c: "Se acerca", items: [
+      ["enviar-inv", "Enviar las invitaciones con el enlace para confirmar"],
+      ["registro", "Pedir cita en el registro civil y entregar documentos"],
+      ["musica-ceremonia", "Elegir canciones: entrada, salida, primer baile"],
+      ["votos", "Escribir los votos"],
+      ["accesorios", "Comprar zapatos, velo, accesorios y ligas"],
+      ["despedida", "Organizar despedida de soltera / soltero"],
+      ["cronograma", "Armar el cronograma del día con los proveedores"],
+      ["pruebas", "Pruebas de vestido y traje"]
+    ]},
+    { id: "e1", t: "1 mes", c: "Últimos ajustes", items: [
+      ["confirmaciones", "Llamar a quienes no han confirmado", "Usa el filtro «Pendientes» de la lista"],
+      ["mesas", "Hacer el plano de mesas"],
+      ["numero-final", "Dar el número final al catering"],
+      ["pagos", "Revisar pagos pendientes a proveedores"],
+      ["ensayo", "Ensayo de la ceremonia"],
+      ["kit", "Preparar kit de emergencia (agujas, curitas, pañuelos)"],
+      ["sobres", "Preparar sobres con los pagos finales y propinas"]
+    ]},
+    { id: "e0", t: "La semana de la boda", c: "¡Ya casi!", items: [
+      ["confirmar-prov", "Confirmar horarios con todos los proveedores"],
+      ["maletas", "Hacer las maletas de la luna de miel"],
+      ["responsable", "Elegir a alguien que coordine el día"],
+      ["entregar", "Entregar decoración, recuerdos y papelería al lugar"],
+      ["descanso", "Descansar, hidratarse y dormir bien"]
+    ]},
+    { id: "ed", t: "Después de la boda", c: "Cierre", items: [
+      ["gracias", "Enviar agradecimientos a los invitados"],
+      ["vestido-limpieza", "Llevar el vestido a limpieza"],
+      ["fotos-final", "Recibir y respaldar fotos y video"],
+      ["acta", "Retirar el acta de matrimonio y actualizar documentos"]
+    ]}
+  ];
+
+  let clave = "", data = { hechos: {}, extra: [] }, guardando = null;
+
+  function pintar() {
+    const cont = $("etapas");
+    cont.innerHTML = "";
+    let total = 0, hechos = 0;
+    ETAPAS.forEach(e => {
+      const items = e.items.map(([id, t, s]) => ({ id, t, s }))
+        .concat(data.extra.filter(x => x.etapa === e.id).map(x => ({ id: x.id, t: x.t, propio: true })));
+      const h = items.filter(i => data.hechos[i.id]).length;
+      total += items.length; hechos += h;
+      const sec = document.createElement("section");
+      sec.className = "etapa";
+      sec.innerHTML = `<div class="etapa-cab"><h3></h3><span>${h} / ${items.length} · ${e.c}</span></div><ul class="items"></ul>
+        <form class="nueva"><input placeholder="Agregar otra tarea…" aria-label="Agregar tarea en ${e.t}"><button>Agregar</button></form>`;
+      sec.querySelector("h3").textContent = e.t;
+      const ul = sec.querySelector("ul");
+      items.forEach(i => {
+        const li = document.createElement("li");
+        li.className = "item" + (data.hechos[i.id] ? " hecho" : "");
+        li.innerHTML = `<input type="checkbox" id="c-${i.id}" ${data.hechos[i.id] ? "checked" : ""}>
+          <label class="caja" for="c-${i.id}"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+          <label class="texto" for="c-${i.id}"></label>${i.propio ? `<button class="quitar" aria-label="Quitar tarea">×</button>` : "<span></span>"}`;
+        const tx = li.querySelector(".texto");
+        tx.textContent = i.t;
+        if (i.s) { const sm = document.createElement("small"); sm.textContent = i.s; tx.appendChild(sm); }
+        li.querySelector("input").addEventListener("change", ev => {
+          if (ev.target.checked) data.hechos[i.id] = true; else delete data.hechos[i.id];
+          pintar(); guardar();
+        });
+        const q = li.querySelector(".quitar");
+        if (q) q.addEventListener("click", () => { data.extra = data.extra.filter(x => x.id !== i.id); delete data.hechos[i.id]; pintar(); guardar(); });
+        ul.appendChild(li);
+      });
+      sec.querySelector("form").addEventListener("submit", ev => {
+        ev.preventDefault();
+        const inp = ev.target.querySelector("input");
+        const t = inp.value.trim(); if (!t) return;
+        data.extra.push({ id: "x" + Date.now().toString(36), etapa: e.id, t });
+        pintar(); guardar();
+        cont.querySelector(`[aria-label="Agregar tarea en ${e.t}"]`)?.focus();
+      });
+      cont.appendChild(sec);
+    });
+    const pct = total ? Math.round(hechos / total * 100) : 0;
+    $("pct").textContent = pct + "%";
+    $("anillo").style.strokeDashoffset = 263.9 * (1 - pct / 100);
+    $("resumen").textContent = `${hechos} de ${total} listas`;
+    const dias = Math.ceil((new Date(B.fecha) - new Date()) / 86400000);
+    $("cuenta").textContent = dias > 0 ? `Faltan ${dias} días para la boda` : "";
+  }
+
+  function guardar() {
+    $("estado").textContent = "Guardando…";
+    clearTimeout(guardando);
+    guardando = setTimeout(async () => {
+      try { await BodaAPI.checklistGuardar(clave, data); $("estado").textContent = "Guardado ✓"; }
+      catch (e) { $("estado").textContent = "No se pudo guardar: " + e.message; }
+    }, 600);
+  }
+
+  $("btn-ocultar").addEventListener("click", ev => {
+    const on = ev.currentTarget.getAttribute("aria-pressed") !== "true";
+    ev.currentTarget.setAttribute("aria-pressed", on);
+    $("etapas").classList.toggle("oculto-hecho", on);
+  });
+
+  $("form-clave").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    clave = $("clave").value.trim();
+    try {
+      const r = await BodaAPI.checklistLeer(clave);
+      data = Object.assign({ hechos: {}, extra: [] }, r.checklist || {});
+      try { sessionStorage.setItem("boda_clave", clave); } catch (e) {}
+      $("candado").hidden = true; $("app").hidden = false;
+      $("aviso-demo").hidden = !BodaAPI.demo;
+      pintar();
+    } catch (e) {
+      $("error-clave").textContent = e.message === "Clave incorrecta" ? "Clave incorrecta." : "No se pudo conectar: " + e.message;
+    }
+  });
+  try { const c = sessionStorage.getItem("boda_clave"); if (c) { $("clave").value = c; $("form-clave").requestSubmit(); } } catch (e) {}
+})();
+</script>
+</body>
+</html>

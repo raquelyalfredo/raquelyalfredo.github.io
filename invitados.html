@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lista de Invitados</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#8E9B86">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Italiana&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+<style>
+  body { min-height: 100vh; }
+  .envoltura { max-width: 760px; margin: 0 auto; padding: 34px 16px 80px; }
+  body.textura-fondo { background: #56634F; }
+  header { text-align: center; color: #fff; margin-bottom: 22px; }
+  header .script { font-family: var(--f-script); font-size: 52px; color: var(--acento-claro); line-height: 1; }
+  header .pre { font-size: 12px; letter-spacing: .32em; text-transform: uppercase; margin-top: 8px; }
+  nav.enlaces { display: flex; justify-content: center; gap: 16px; margin-top: 12px; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; }
+  nav.enlaces a { color: #fff; }
+
+  .panel { border-radius: 18px; padding: 24px 20px; box-shadow: 0 18px 40px rgba(45,55,40,.28); }
+
+  /* candado */
+  #candado { max-width: 380px; margin: 40px auto; text-align: center; }
+  #candado h2 { font-family: var(--f-display); font-weight: 400; font-size: 30px; color: var(--vino); margin: 4px 0 10px; }
+  #candado p { color: var(--tinta-suave); margin: 0 0 16px; }
+  #candado input { width: 100%; padding: 12px 14px; font-size: 18px; border: 1px solid var(--beige-osc); border-radius: 10px; background: #fff; text-align: center; margin-bottom: 12px; }
+
+  /* resumen */
+  .resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+  .dato { text-align: center; padding: 14px 6px 12px; border-radius: 14px; background: rgba(255,255,255,.5); border: 1px solid var(--beige); }
+  .dato b { display: block; font-family: var(--f-display); font-weight: 400; font-size: 34px; line-height: 1.05; color: var(--vino); font-variant-numeric: tabular-nums; }
+  .dato span { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--tinta-suave); }
+  .dato.ok b { color: var(--salvia-osc); }
+  .dato.no b { color: var(--rosa-osc); }
+  .barra { height: 8px; border-radius: 99px; background: var(--beige); overflow: hidden; display: flex; margin: 0 0 20px; }
+  .barra i { display: block; height: 100%; transition: width .6s ease; }
+  .barra .b-ok { background: var(--salvia); } .barra .b-no { background: var(--rosa); }
+
+  .herramientas { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .buscar { flex: 1 1 220px; padding: 10px 14px; font-size: 17px; border: 1px solid var(--beige-osc); border-radius: 999px; background: #fff; }
+  .filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filtros button { border: 1px solid var(--beige-osc); background: transparent; border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 14px; color: var(--tinta); }
+  .filtros button[aria-pressed="true"] { background: var(--vino); color: var(--papel); border-color: var(--vino); }
+
+  /* lista */
+  ul.lista { list-style: none; padding: 0; margin: 0; }
+  .fila { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 12px 6px; border-bottom: 1px solid var(--beige); }
+  .fila:last-child { border-bottom: 0; }
+  .check {
+    width: 36px; height: 36px; border-radius: 50%; border: 1.5px dashed var(--beige-osc);
+    display: grid; place-items: center; background: transparent; cursor: pointer; padding: 0;
+    transition: transform .2s, background .3s, border-color .3s;
+  }
+  .check:hover { transform: scale(1.08); }
+  .check svg { width: 20px; height: 20px; }
+  .fila[data-estado="confirmado"] .check { background: var(--salvia-osc); border: 1.5px solid var(--salvia-osc); color: #fff; }
+  .fila[data-estado="confirmado"] .check svg { animation: pop .35s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes pop { from { transform: scale(.3); } }
+  .fila[data-estado="no_asiste"] .check { background: var(--rosa-claro); border: 1.5px solid var(--rosa); color: var(--rosa-osc); }
+  @keyframes trazo { to { stroke-dashoffset: 0; } }
+  .quien .nom { font-size: 19px; font-weight: 600; color: var(--tinta); line-height: 1.2; }
+  .fila[data-estado="no_asiste"] .nom { text-decoration: line-through; text-decoration-color: var(--rosa); color: var(--tinta-suave); }
+  .quien .meta { font-size: 14px; color: var(--tinta-suave); display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 2px; }
+  .etiqueta { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; background: var(--beige); color: var(--tinta); }
+  .etiqueta.web { background: #E4E8DC; color: var(--salvia-osc); }
+  .etiqueta.manual { background: var(--rosa-claro); color: var(--vino); }
+  .etiqueta.nuevo { background: #DCE5ED; color: #4D6275; }
+  .quien .msj { font-style: italic; font-size: 15px; color: var(--tinta-suave); margin-top: 4px; }
+  .mas { border: 0; background: transparent; cursor: pointer; padding: 6px 8px; border-radius: 8px; color: var(--tinta-suave); font-size: 22px; line-height: 1; }
+  .mas:hover { background: var(--beige); }
+  .vacio { text-align: center; padding: 30px 10px; color: var(--tinta-suave); font-style: italic; }
+
+  /* agregar */
+  details.agregar { margin-top: 18px; border-top: 1px solid var(--beige); padding-top: 14px; }
+  details.agregar summary { cursor: pointer; font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--vino); font-weight: 600; }
+  .form-agregar { display: grid; gap: 10px; margin-top: 12px; }
+  .form-agregar textarea, .form-agregar input { width: 100%; padding: 10px 12px; font-size: 17px; border: 1px solid var(--beige-osc); border-radius: 10px; background: #fff; }
+  .form-agregar textarea { min-height: 110px; }
+  .dos { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+  .ayuda { font-size: 14px; color: var(--tinta-suave); margin: 0; }
+
+  /* menú de acciones */
+  dialog { border: 0; border-radius: 18px; padding: 22px 20px; width: min(380px, calc(100vw - 32px)); background: var(--fondo-papel); color: var(--tinta); box-shadow: 0 30px 60px rgba(0,0,0,.4); }
+  dialog::backdrop { background: rgba(60,70,55,.5); }
+  dialog h3 { margin: 0 0 4px; font-family: var(--f-display); font-weight: 400; font-size: 26px; color: var(--vino); }
+  dialog .sub { margin: 0 0 16px; color: var(--tinta-suave); font-size: 15px; }
+  dialog .acciones { display: grid; gap: 8px; }
+  dialog .acciones .boton { width: 100%; }
+  dialog label { display: block; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--rosa-osc); margin: 4px 0 4px; }
+  dialog select, dialog input { width: 100%; padding: 9px 12px; font-size: 17px; border: 1px solid var(--beige-osc); border-radius: 10px; background: #fff; margin-bottom: 8px; }
+  .boton.peligro { background: transparent; color: #9B2C3A; border-color: #C9A0A6; }
+  .boton.peligro:hover { background: #9B2C3A; color: #fff; }
+
+  .pie { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; font-size: 14px; color: var(--tinta-suave); }
+  .pie button { background: none; border: 0; color: var(--vino); cursor: pointer; text-decoration: underline; font-size: 14px; padding: 4px; }
+  .aviso { background: #E4E8DC; color: var(--salvia-osc); border-radius: 12px; padding: 10px 14px; font-size: 15px; margin-bottom: 14px; }
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 20px); opacity: 0; background: var(--vino); color: var(--papel); padding: 10px 18px; border-radius: 999px; transition: all .3s; z-index: 60; font-size: 15px; pointer-events: none; }
+  .toast.ver { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 560px) {
+    .resumen { grid-template-columns: repeat(2, 1fr); }
+    .dos { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body class="textura-fondo">
+<div class="envoltura">
+  <header>
+    <div class="script">lista de invitados</div>
+    <div class="pre" id="titulo-pareja"></div>
+    <nav class="enlaces"><a href="index.html">Invitación</a><a href="checklist.html">Checklist</a></nav>
+  </header>
+
+  <section id="candado" class="panel textura-papel">
+    <h2>Solo para los novios</h2>
+    <p>Escribe la clave para ver la lista.</p>
+    <form id="form-clave">
+      <input type="password" id="clave" autocomplete="current-password" aria-label="Clave" placeholder="Clave">
+      <button class="boton" type="submit" style="width:100%">Entrar</button>
+      <p class="error" id="error-clave" style="color:#9B2C3A;margin-top:10px"></p>
+    </form>
+  </section>
+
+  <section id="app" class="panel textura-papel" hidden>
+    <div class="aviso" id="aviso-demo" hidden>Modo prueba: la clave es <b>boda</b> y los datos viven solo en este navegador. Conecta Google Sheets para compartirlos (ver INSTRUCCIONES.md).</div>
+    <div class="resumen">
+      <div class="dato"><b id="n-total">0</b><span id="l-total">Invitaciones</span></div>
+      <div class="dato ok"><b id="n-ok">0</b><span id="l-ok">Confirmados</span></div>
+      <div class="dato no"><b id="n-no">0</b><span>No asisten</span></div>
+      <div class="dato"><b id="n-pend">0</b><span>Pendientes</span></div>
+    </div>
+    <div class="barra" aria-hidden="true"><i class="b-ok" id="b-ok"></i><i class="b-no" id="b-no"></i></div>
+
+    <div class="herramientas">
+      <input class="buscar" id="buscar" type="search" placeholder="Buscar invitado…" aria-label="Buscar invitado">
+      <div class="filtros" role="group" aria-label="Filtrar">
+        <button type="button" data-f="todos" aria-pressed="true">Todos</button>
+        <button type="button" data-f="confirmado" aria-pressed="false">✓ Confirmados</button>
+        <button type="button" data-f="pendiente" aria-pressed="false">Pendientes</button>
+        <button type="button" data-f="no_asiste" aria-pressed="false">No asisten</button>
+      </div>
+    </div>
+
+    <ul class="lista" id="lista"></ul>
+
+    <details class="agregar">
+      <summary>Agregar invitados</summary>
+      <form class="form-agregar" id="form-agregar">
+        <p class="ayuda">Un nombre por línea (puedes pegar toda tu lista de una vez).</p>
+        <textarea id="nuevos" placeholder="Nombre&#10;Nombre y su esposa&#10;Nombre +2"></textarea>
+        <div class="dos">
+          <input id="nuevo-grupo" placeholder="Grupo (ej. Familia novia, Amigos)">
+          <input id="nuevo-cupos" type="number" min="1" max="20" value="1" aria-label="Cupos por invitación">
+        </div>
+        <p class="ayuda">El número es cuántas personas cubre cada invitación (cupos).</p>
+        <button class="boton" type="submit">Agregar a la lista</button>
+      </form>
+    </details>
+
+    <div class="pie">
+      <span id="actualizado"></span>
+      <span><button type="button" id="btn-csv">Descargar CSV</button> · <button type="button" id="btn-salir">Salir</button></span>
+    </div>
+  </section>
+</div>
+
+<dialog id="menu">
+  <h3 id="m-nombre"></h3>
+  <p class="sub" id="m-sub"></p>
+  <div class="acciones">
+    <label for="m-personas">Personas que asisten</label>
+    <input id="m-personas" type="number" min="1" max="20" value="1">
+    <button class="boton" data-accion="confirmado">✓ Confirmó (WhatsApp / en persona)</button>
+    <button class="boton secundario" data-accion="no_asiste">No asistirá</button>
+    <button class="boton secundario" data-accion="pendiente">Volver a pendiente</button>
+    <details>
+      <summary style="cursor:pointer;color:var(--tinta-suave);margin:6px 0">Editar datos</summary>
+      <label for="m-edit-nombre">Nombre</label><input id="m-edit-nombre">
+      <label for="m-edit-grupo">Grupo</label><input id="m-edit-grupo">
+      <label for="m-edit-cupos">Cupos</label><input id="m-edit-cupos" type="number" min="1" max="20">
+      <button class="boton secundario" data-accion="editar" style="width:100%">Guardar cambios</button>
+    </details>
+    <button class="boton peligro" data-accion="eliminar">Eliminar de la lista</button>
+    <button class="boton secundario" data-accion="cerrar" style="border-color:transparent">Cerrar</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="datos.js"></script>
+<script src="api.js"></script>
+<script src="invitados-iniciales.js"></script>
+<script>
+(function () {
+  const B = window.BODA;
+  const $ = id => document.getElementById(id);
+  $("titulo-pareja").textContent = `${B.novia} & ${B.novio}`;
+  let clave = "", invitados = [], filtro = "todos", actual = null;
+
+  const ICONO_OK = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ICONO_NO = '<svg viewBox="0 0 24 24" fill="none"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+
+  function toast(t) { const el = $("toast"); el.textContent = t; el.classList.add("ver"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("ver"), 2200); }
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  async function cargar(silencioso) {
+    try {
+      const r = await BodaAPI.listar(clave);
+      invitados = r.invitados || [];
+      pintar();
+      $("actualizado").textContent = "Actualizado " + new Date().toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
+      return true;
+    } catch (e) {
+      if (!silencioso) throw e;
+      return false;
+    }
+  }
+
+  function pintar() {
+    const total = invitados.length;
+    const ok = invitados.filter(g => g.estado === "confirmado");
+    const no = invitados.filter(g => g.estado === "no_asiste").length;
+    const pend = total - ok.length - no;
+    const personas = ok.reduce((s, g) => s + Number(g.personas || 1), 0);
+    const cupos = invitados.reduce((s, g) => s + Number(g.cupos || 1), 0);
+    $("n-total").textContent = total;
+    $("l-total").innerHTML = `Invitaciones<br>${cupos} personas`;
+    $("n-ok").textContent = ok.length;
+    $("l-ok").innerHTML = `Confirmados<br>${personas} ${personas === 1 ? "persona" : "personas"}`;
+    $("n-no").textContent = no;
+    $("n-pend").textContent = pend;
+    $("b-ok").style.width = total ? (ok.length / total * 100) + "%" : 0;
+    $("b-no").style.width = total ? (no / total * 100) + "%" : 0;
+
+    const q = BodaAPI.normalizar($("buscar").value);
+    const vis = invitados
+      .filter(g => filtro === "todos" || (g.estado || "pendiente") === filtro)
+      .filter(g => !q || BodaAPI.normalizar(g.nombre + " " + (g.grupo || "")).includes(q))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+
+    $("lista").innerHTML = vis.length ? vis.map(g => {
+      const est = g.estado || "pendiente";
+      const etiquetas = [
+        g.grupo ? `<span class="etiqueta">${esc(g.grupo)}</span>` : "",
+        Number(g.cupos) > 1 ? `<span>${g.cupos} cupos</span>` : "",
+        est === "confirmado" ? `<span>${g.personas || 1} ${Number(g.personas) === 1 ? "persona" : "personas"}</span>` : "",
+        g.fuente === "web" ? `<span class="etiqueta web">Invitación</span>` : "",
+        g.fuente === "manual" ? `<span class="etiqueta manual">Manual</span>` : "",
+        g.nuevo === "repetido"
+          ? `<span class="etiqueta nuevo">Nombre repetido</span></div><div class="msj">Hay varias invitaciones con este nombre: ${esc(BodaAPI.candidatos(invitados.filter(x => x.id !== g.id), g.nombre).map(x => `${x.nombre} (${x.grupo || "sin grupo"})`).join(" o "))}. Marca con ✓ la correcta y elimina esta entrada desde ⋯.`
+          : g.nuevo ? `<span class="etiqueta nuevo" title="Confirmó con un nombre que no estaba en la lista">No estaba en la lista</span>` : ""
+      ].join("");
+      return `<li class="fila" data-estado="${est}" data-id="${esc(g.id)}">
+        <button class="check" data-rapido title="${est === "confirmado" ? "Confirmado" : "Marcar como confirmado"}" aria-label="${est === "confirmado" ? "Confirmado: " : "Marcar como confirmado a "}${esc(g.nombre)}">${est === "confirmado" ? ICONO_OK : est === "no_asiste" ? ICONO_NO : ""}</button>
+        <div class="quien"><div class="nom">${esc(g.nombre)}</div><div class="meta">${etiquetas}</div>${g.mensaje ? `<div class="msj">“${esc(g.mensaje)}”</div>` : ""}</div>
+        <button class="mas" data-menu aria-label="Opciones para ${esc(g.nombre)}">⋯</button>
+      </li>`;
+    }).join("") : `<li class="vacio">${total ? "Nadie coincide con la búsqueda." : (window.INVITADOS_INICIALES ? `La lista está vacía.<br><br><button class="boton" type="button" data-cargar>Cargar la lista de invitados (${window.INVITADOS_INICIALES.length} invitaciones)</button>` : "Aún no hay invitados. Agrégalos abajo en «Agregar invitados».")}</li>`;
+  }
+
+  async function accion(fn, msg) {
+    try { await fn(); await cargar(); if (msg) toast(msg); }
+    catch (e) { toast("Error: " + e.message); }
+  }
+
+  // Entrar
+  $("form-clave").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    clave = $("clave").value.trim();
+    $("error-clave").textContent = "";
+    try {
+      await cargar();
+      try { sessionStorage.setItem("boda_clave", clave); } catch (e) {}
+      $("candado").hidden = true; $("app").hidden = false;
+      $("aviso-demo").hidden = !BodaAPI.demo;
+    } catch (e) {
+      $("error-clave").textContent = e.message === "Clave incorrecta" ? "Clave incorrecta." : "No se pudo conectar: " + e.message;
+    }
+  });
+  try {
+    const c = sessionStorage.getItem("boda_clave");
+    if (c) { $("clave").value = c; $("form-clave").requestSubmit(); }
+  } catch (e) {}
+
+  // Clic en la lista
+  // Cargar la lista inicial (invitados-iniciales.js), respetando grupo y cupos de cada invitación
+  async function cargarIniciales(boton) {
+    boton.disabled = true; boton.textContent = "Cargando…";
+    const tandas = [];
+    window.INVITADOS_INICIALES.forEach(([nombre, grupo, cupos]) => {
+      const ult = tandas[tandas.length - 1];
+      if (ult && ult.grupo === grupo && ult.cupos === cupos) ult.nombres.push(nombre);
+      else tandas.push({ grupo, cupos, nombres: [nombre] });
+    });
+    try {
+      for (const t of tandas) await BodaAPI.agregar(clave, t.nombres, t.grupo, t.cupos);
+      await cargar();
+      toast("Lista de invitados cargada");
+    } catch (e) { toast("Error: " + e.message); boton.disabled = false; }
+  }
+
+  $("lista").addEventListener("click", ev => {
+    const bc = ev.target.closest("[data-cargar]");
+    if (bc) return cargarIniciales(bc);
+    const li = ev.target.closest(".fila"); if (!li) return;
+    const g = invitados.find(x => String(x.id) === li.dataset.id); if (!g) return;
+    if (ev.target.closest("[data-rapido]")) {
+      if (g.estado === "confirmado") return abrirMenu(g);
+      return accion(() => BodaAPI.marcar(clave, g.id, "confirmado", g.cupos || 1), `✓ ${g.nombre} confirmado`);
+    }
+    if (ev.target.closest("[data-menu]")) abrirMenu(g);
+  });
+
+  function abrirMenu(g) {
+    actual = g;
+    $("m-nombre").textContent = g.nombre;
+    const est = { confirmado: "Confirmado", no_asiste: "No asistirá", pendiente: "Pendiente" }[g.estado || "pendiente"];
+    $("m-sub").textContent = est + (g.fecha ? " · " + new Date(g.fecha).toLocaleDateString("es") : "");
+    $("m-personas").value = g.estado === "confirmado" ? (g.personas || 1) : (g.cupos || 1);
+    $("m-edit-nombre").value = g.nombre; $("m-edit-grupo").value = g.grupo || ""; $("m-edit-cupos").value = g.cupos || 1;
+    $("menu").showModal();
+  }
+  $("menu").addEventListener("click", ev => {
+    const b = ev.target.closest("[data-accion]");
+    if (ev.target === $("menu")) return $("menu").close();
+    if (!b || !actual) return;
+    const g = actual, a = b.dataset.accion;
+    $("menu").close();
+    if (a === "cerrar") return;
+    if (a === "eliminar") { if (confirm(`¿Eliminar a ${g.nombre} de la lista?`)) accion(() => BodaAPI.eliminar(clave, g.id), "Eliminado"); return; }
+    if (a === "editar") return accion(() => BodaAPI.editar(clave, g.id, { nombre: $("m-edit-nombre").value.trim() || g.nombre, grupo: $("m-edit-grupo").value.trim(), cupos: Number($("m-edit-cupos").value || 1), nuevo: false }), "Guardado");
+    accion(() => BodaAPI.marcar(clave, g.id, a, $("m-personas").value), a === "confirmado" ? `✓ ${g.nombre} confirmado` : "Actualizado");
+  });
+
+  // Filtros y búsqueda
+  document.querySelectorAll(".filtros button").forEach(b => b.addEventListener("click", () => {
+    filtro = b.dataset.f;
+    document.querySelectorAll(".filtros button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    pintar();
+  }));
+  $("buscar").addEventListener("input", pintar);
+
+  // Agregar
+  $("form-agregar").addEventListener("submit", ev => {
+    ev.preventDefault();
+    const nombres = $("nuevos").value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    if (!nombres.length) return;
+    accion(async () => { await BodaAPI.agregar(clave, nombres, $("nuevo-grupo").value.trim(), $("nuevo-cupos").value); $("nuevos").value = ""; }, `${nombres.length} agregado(s)`);
+  });
+
+  // CSV
+  $("btn-csv").addEventListener("click", () => {
+    const cols = ["nombre", "grupo", "cupos", "estado", "personas", "fuente", "mensaje", "fecha"];
+    const csv = [cols.join(",")].concat(invitados.map(g => cols.map(c => `"${String(g[c] ?? "").replace(/"/g, '""')}"`).join(","))).join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv" }));
+    a.download = "invitados-boda.csv"; a.click();
+  });
+  $("btn-salir").addEventListener("click", () => { try { sessionStorage.removeItem("boda_clave"); } catch (e) {} location.reload(); });
+
+  // Se actualiza sola cada 30 s (para ver confirmaciones nuevas)
+  setInterval(() => { if (clave && !$("app").hidden && !$("menu").open) cargar(true); }, 30000);
+  window.addEventListener("storage", () => { if (clave && BodaAPI.demo) cargar(true); });
+})();
+</script>
+</body>
+</html>

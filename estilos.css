@@ -1,0 +1,100 @@
+/* Paleta: beige + rosa empolvado (principales), verde salvia (complementario del rosa) y azul empolvado (complementario del beige) */
+:root {
+  --papel: #F7F1E8;
+  --papel-2: #F0E7D9;
+  --beige: #E8DCC8;
+  --beige-osc: #D2C0A3;
+  --rosa: #CFA3A4;
+  --rosa-claro: #EBD3D1;
+  --rosa-osc: #9A6A6E;
+  --vino: #86575B;   /* rosa profundo: textos y botones */
+  --fondo-osc: #8E9B86;
+  --fondo-noche: #65725E;
+  --acento: #8DA1B4;   /* azul empolvado */
+  --acento-claro: #F5EEE2;
+  --salvia: #A7B39C;
+  --salvia-osc: #6F7E66;
+  --tinta: #5A4744;
+  --tinta-suave: #86706B;
+
+  --f-script: "Pinyon Script", cursive;
+  --f-display: "Italiana", serif;
+  --f-serif: "Cormorant Garamond", Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--f-serif);
+  color: var(--tinta);
+  background: var(--fondo-osc);
+  line-height: 1.5;
+}
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* textura de papel (ruido sutil) */
+:root {
+  --fondo-papel:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .33 0 0 0 0 .25 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 80% at 20% 0%, #FAF5EC 0%, transparent 60%),
+    radial-gradient(90% 70% at 100% 100%, #EADFCB 0%, transparent 60%),
+    var(--papel);
+}
+.textura-papel { background: var(--fondo-papel); }
+
+/* fondo vino con relieve floral */
+.textura-fondo {
+  background-color: var(--fondo-osc);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.08' stroke-width='1.2'%3E%3Cpath d='M20 140c20-30 40-50 70-60M48 112c-8-10-20-12-28-6 8 6 20 8 28 6zM62 98c2-12-4-24-14-26 0 10 6 22 14 26zM80 84c10-6 14-18 8-26-8 6-12 18-8 26z'/%3E%3Ccircle cx='120' cy='40' r='9'/%3E%3Ccircle cx='120' cy='40' r='3'/%3E%3Cpath d='M120 31c4-8 10-8 12-2M129 40c8 4 8 10 2 12M120 49c-4 8-10 8-12 2M111 40c-8-4-8-10-2-12'/%3E%3C/g%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.05' stroke-width='1.2' transform='translate(1 1)'%3E%3Cpath d='M20 140c20-30 40-50 70-60'/%3E%3Ccircle cx='120' cy='40' r='9'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(120% 90% at 50% 0%, #A3AF9B 0%, var(--fondo-osc) 55%, var(--fondo-noche) 100%);
+}
+
+/* hoja de papel con borde rasgado */
+.hoja {
+  position: relative;
+  isolation: isolate;
+}
+.hoja::before {
+  content: "";
+  position: absolute; inset: 0;
+  z-index: -1;
+  background: var(--fondo-papel);
+  filter: url(#rasgado) drop-shadow(0 18px 30px rgba(40, 50, 35, .28));
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* separador fino con rombo */
+.separador {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  color: var(--rosa); margin: 14px auto;
+}
+.separador::before, .separador::after {
+  content: ""; height: 1px; width: 56px;
+  background: linear-gradient(90deg, transparent, currentColor);
+}
+.separador::after { transform: scaleX(-1); }
+.separador i { width: 6px; height: 6px; transform: rotate(45deg); border: 1px solid currentColor; display: block; }
+
+.boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 26px; border-radius: 999px;
+  border: 1px solid var(--vino); background: var(--vino); color: var(--papel);
+  font-family: var(--f-serif); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; font-size: 13px;
+  cursor: pointer; text-decoration: none;
+  transition: background .25s, color .25s, transform .2s;
+}
+.boton:hover { background: #6E4549; }
+.boton:active { transform: scale(.98); }
+.boton.secundario { background: transparent; color: var(--vino); }
+.boton.secundario:hover { background: var(--vino); color: var(--papel); }
+.boton:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible {
+  outline: 2px solid var(--acento); outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
