@@ -53,7 +53,7 @@ window.BODA = {
   soloAdultos: "Queremos mucho a sus pequeños, pero esta vez pensamos en una celebración solo para adultos. ¡Gracias por entenderlo y regalarse una noche de baile con nosotros!",
 
   // --- Regalos ---
-  regalos: "Tu presencia es nuestro mejor regalo. Si deseas tener un detalle con nosotros, habrá lluvia de sobres el día de la boda.",
+  regalos: "Tu presencia es nuestro mejor regalo. Si deseas tener un detalle con nosotros, el día de la boda habrá una mesa especial para recibir los regalos.",
 
   // --- Confirmación ---
   confirmarAntesDe: "5 de diciembre de 2026",
